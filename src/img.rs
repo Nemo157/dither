@@ -1,7 +1,5 @@
 use super::RGB;
-use super::{Error, Result};
 use std::ops::{Index, IndexMut};
-use std::path::Path;
 /// Image as a flat buffer of pixels; accessible by (x, y) [Index]
 #[derive(Clone, Debug, PartialEq)]
 pub struct Img<P> {
@@ -103,36 +101,7 @@ impl<P> Img<P> {
     }
 }
 
-impl<N: From<u8>> Img<RGB<N>> {
-    /// load an image as an RGB<N> after converting it. See [image::open] and [image::DynamicImage::to_rgb]
-    /// ```rust
-    /// use dither::prelude::*;
-    /// let img: Img<RGB<u8>> = Img::load("bunny.png").unwrap();
-    /// assert_eq!(img.size(), (480, 320));
-    /// ```
-    pub fn load(path: impl AsRef<Path>) -> Result<Self> {
-        match image::open(&path).and_then(|img| Ok(img.to_rgb())) {
-            Err(err) => Err(Error::input(err, path.as_ref())),
-            Ok(img) => Ok(Img {
-                buf: img.pixels().map(|p| RGB::from(p.0)).collect(),
-                width: img.width(),
-            }),
-        }
-    }
-}
-
 impl Img<RGB<u8>> {
-    /// save an image as a `.png` or `.jpg` to the path. the path extension determines the image type.
-    /// See [image::ImageBuffer::save]
-    pub fn save(self, path: &Path) -> Result<()> {
-        let (width, height) = self.size();
-        let buf = image::RgbImage::from_raw(width, height, self.raw_buf()).unwrap();
-        if let Err(err) = buf.save(path) {
-            Err(Error::output(err, path))
-        } else {
-            Ok(())
-        }
-    }
     /// the raw_buf flattens out each RGB triplet;
     /// ```
     /// use dither::prelude::*;

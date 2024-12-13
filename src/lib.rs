@@ -9,12 +9,14 @@ pub mod color;
 pub mod ditherer;
 mod error;
 mod img;
-mod opts;
-pub mod prelude;
-pub use self::error::Error;
-pub use self::error::Result;
 
-use self::prelude::*;
+pub use self::{
+    color::{palette::Palette, RGB},
+    ditherer::{Dither, Ditherer},
+    error::{Error, Result},
+    img::Img,
+};
+
 #[cfg(test)]
 mod tests;
 
